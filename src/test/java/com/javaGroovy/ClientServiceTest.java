@@ -240,7 +240,15 @@ public class ClientServiceTest {
                 new HashMap<> (Map.of ("test","test1","status","H")),
                 new HashMap<> (Map.of ("test","test2","status","L")),
                 new HashMap<> (Map.of ("test","test1","status","H")),
-                new HashMap<> (Map.of ("test","test2","status","L"))
+                new HashMap<> (Map.of ("test","test2","status","L")),
+                new HashMap<> (Map.of ("test","test1","status","H")),
+                new HashMap<> (Map.of ("test","test2","status","L")),
+                new HashMap<> (Map.of ("test","test1","status","H")),
+                new HashMap<> (Map.of ("test","test2","status","L")),
+                new HashMap<> (Map.of ("test","test1","status","H")),
+//                new HashMap<> (Map.of ("test","test2","status","L")),
+//                new HashMap<> (Map.of ("test","test2","status","L")),
+                new HashMap<> (Map.of ("test","test2","status","Done"))
         );
         ClientRequestData clientRequestData=new ClientRequestData ();
         clientRequestData.setMetaDataMap (mapList);
@@ -253,42 +261,54 @@ public class ClientServiceTest {
         ClientServiceTest clientServiceTest=new ClientServiceTest ();
 
         // Calling clientData to generate Groovy script
-        String data=clientServiceTest.clientData3(json);
+        String data=clientServiceTest.clientData3 (json);
 
         // Executing the Groovy script using Eval.me
         Object ab=Eval.me (data);
 
         // Printing the result obtained from executing the Groovy script
         System.out.println (ab);
-        int count = dataCount (clientRequest);
+        int count=dataCount (clientRequest);
 
-        String choosingMlt = mapTestToMlt (count);
+        String choosingMlt=mapTestToMlt (count);
         System.out.println (choosingMlt);
     }
 
     public String mapTestToMlt(int abnormalCount) {
-        HashMap<Integer, String> hashMap = new HashMap<> ();
-//         = dataCount ();
+        HashMap<Integer, String> hashMap=new HashMap<> ();
         System.out.println ("Abnormal count: ");
-        String[] meltFiles = new String[]{"mp4", "mlt2_1", "mlt2_2", "mlt2_3", "mlt2_4"};
-        System.out.println ("Mlt files: "+ Arrays.toString (meltFiles));
+        String[] meltFiles=new String[]{"mp4","mlt2_1","mlt2_2","mlt2_3","mlt2_4"};
+        System.out.println ("Mlt files: " + Arrays.toString (meltFiles));
         if (abnormalCount >= 1 && abnormalCount < meltFiles.length) {
-            hashMap.put(abnormalCount, meltFiles[abnormalCount]);
-            System.out.print ("First 4 mlt: "+hashMap);
+            hashMap.put (abnormalCount,meltFiles[abnormalCount]);
+            System.out.print ("First 4 mlt: " + hashMap);
+        }else if (abnormalCount == 0) {
+            hashMap.put (abnormalCount,meltFiles[abnormalCount]);
+            System.out.println ("Abnormal count 0 then add first index...");
         }
 
-        if (abnormalCount > 4) {
-            String largestMlt = meltFiles[meltFiles.length - 1];
-            String abnormalMlt = largestMlt + " + mlt2_" + (abnormalCount - 4);
-            hashMap.put(abnormalCount, abnormalMlt);
-            System.out.println ("After 4th mlt: "+hashMap);
+        if (abnormalCount > 4 && abnormalCount <= 8) {
+            String largestMlt=meltFiles[meltFiles.length - 1];
+            String abnormalMlt=largestMlt + " + mlt2_" + (abnormalCount - 4);
+            hashMap.put (abnormalCount,abnormalMlt);
+            System.out.println ("After 4th mlt: " + hashMap);
         }
-        return hashMap.getOrDefault(abnormalCount, "Unknown Mlt");
+        else if (abnormalCount > 8 && abnormalCount <= 12){
+            String largestMlt=meltFiles[meltFiles.length - 1];
+            String abnormalMlt=largestMlt +" + "+ largestMlt + " + mlt2_" + (abnormalCount - 8);
+            hashMap.put (abnormalCount,abnormalMlt);
+            System.out.println ("After 8th mlt: " + hashMap);
+        }
+        else{
+            String largestMlt=meltFiles[meltFiles.length - 1];
+            String abnormalMlt=largestMlt+" + " + largestMlt +" + "+ largestMlt + "+ mlt2_" + (abnormalCount - 12);
+            hashMap.put (abnormalCount,abnormalMlt);
+            System.out.println ("After 12th mlt: " + hashMap);
+        }
+        return hashMap.getOrDefault (abnormalCount,"UNKNOWN");
+
     }
 }
-
-
-
 
 
 //        System.out.println ("Client: " + clientRequest);
