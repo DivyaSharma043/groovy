@@ -246,8 +246,8 @@ public class ClientServiceTest {
                 new HashMap<> (Map.of ("test","test1","status","H")),
                 new HashMap<> (Map.of ("test","test2","status","L")),
                 new HashMap<> (Map.of ("test","test1","status","H")),
-//                new HashMap<> (Map.of ("test","test2","status","L")),
-//                new HashMap<> (Map.of ("test","test2","status","L")),
+                new HashMap<> (Map.of ("test","test2","status","L")),
+                new HashMap<> (Map.of ("test","test2","status","L")),
                 new HashMap<> (Map.of ("test","test2","status","Done"))
         );
         ClientRequestData clientRequestData=new ClientRequestData ();
@@ -282,7 +282,8 @@ public class ClientServiceTest {
         if (abnormalCount >= 1 && abnormalCount < meltFiles.length) {
             hashMap.put (abnormalCount,meltFiles[abnormalCount]);
             System.out.print ("First 4 mlt: " + hashMap);
-        }else if (abnormalCount == 0) {
+        }
+        else if (abnormalCount == 0) {
             hashMap.put (abnormalCount,meltFiles[abnormalCount]);
             System.out.println ("Abnormal count 0 then add first index...");
         }
@@ -299,7 +300,7 @@ public class ClientServiceTest {
             hashMap.put (abnormalCount,abnormalMlt);
             System.out.println ("After 8th mlt: " + hashMap);
         }
-        else{
+        else if (abnormalCount > 12){
             String largestMlt=meltFiles[meltFiles.length - 1];
             String abnormalMlt=largestMlt+" + " + largestMlt +" + "+ largestMlt + "+ mlt2_" + (abnormalCount - 12);
             hashMap.put (abnormalCount,abnormalMlt);
@@ -309,43 +310,3 @@ public class ClientServiceTest {
 
     }
 }
-
-
-//        System.out.println ("Client: " + clientRequest);
-//        String condition=
-//                "def clientData = new groovy.json.JsonSlurper().parseText('" + clientRequest + "'); \n" +
-//                        "List<HashMap<String, String>> mapData = clientData.clientRequestData.metaDataMap; \n" +
-//                        "int count = 0;\n" +
-//                        "System.out.println(mapData);\n" +
-//                        "for (HashMap<String, String> data1 : mapData) {\n" +
-//                        "    if ((\"H\".equals(data1.get(\"status\")) || \"L\".equals(data1.get(\"status\")))\n" +
-//                        "            && !\"done\".equals(data1.get(\"status\"))) {\n" +
-//                        "        count++;\n" +
-//                        "    }\n" +
-//                        "}\n" +
-//                        "if (count > 0) {\n" +
-//                        "    System.out.println(count + '_abnormal test');\n" +
-//                        "    for (HashMap<String, String> data1 : mapData) {\n" +
-//                        "        if ('H'.equals(data1.get('status')) || 'L'.equals(data1.get('status'))) {\n" +
-//                        "            System.out.println(data1);\n" +
-//                        "        }\n" +
-//                        "    }\n" +
-//                        "}\n" +
-//                        "def abnormalCount = count;\n" +
-//                        "def map = [:]\n" +
-//                        "String[] meltFiles = ['mp4', 'mlt2_1', 'mlt2_2', 'mlt2_3', 'mlt2_4'];\n" +
-//                        "\n" +
-//                        "if (abnormalCount >= 1 && abnormalCount < meltFiles.length) {\n" +
-//                        "    map[abnormalCount] = meltFiles[abnormalCount];\n" +
-//                        "    println map\n" +
-//                        "}\n" +
-//                        "\n" +
-//                        "if (abnormalCount > 4) {\n" +
-//                        "    def largestMlt = meltFiles[-1];\n" +
-//                        "    println largestMlt\n" +
-//                        "\n" +
-//                        "    def abnormalMlt = largestMlt + ' + mlt2_' + (abnormalCount - 4);\n" +
-//                        "    map[abnormalCount] = abnormalMlt;\n" +
-//                        "    println map\n" +
-//                        "}\n" +
-//                        "return map.getOrDefault(abnormalCount, 'Unknown Mlt');";
