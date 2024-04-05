@@ -7,7 +7,5 @@ import java.util.List;
 
 @Data
 public class ClientRequestData {
-
-    private String schemaId;
-    private List<HashMap<String, String>> metaDataMap;
+    private List<ClientInputData> clientInputData;
 }
