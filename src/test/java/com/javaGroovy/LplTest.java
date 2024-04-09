@@ -1,9 +1,10 @@
 package com.javaGroovy;
 
-import com.google.gson.Gson;
 import com.javaGroovy.domain.ClientInputData;
 import com.javaGroovy.domain.ClientRequest;
 import com.javaGroovy.domain.ClientRequestData;
+import groovy.util.Eval;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class LplTest {
 
-    private static String getData() {
+    public static Integer getString() {
         ClientRequest clientRequest = new ClientRequest();
         clientRequest.setRequestUuid("123");
         clientRequest.setUseCaseId("test");
@@ -43,9 +44,60 @@ public class LplTest {
 
         clientRequestData.setClientInputData(clientInputDataList);
         clientRequest.setClientRequestData(clientRequestData);
-        Gson gson = new Gson();
-        String jsonClientRequest = gson.toJson(clientRequest);
-        return jsonClientRequest;
+
+        int count = 0;
+
+        for (ClientInputData inputData : clientInputDataList) {
+            HashMap<String, String> mapData = inputData.getMetaDataMap();
+            String status = mapData.get("status");
+            if (("H".equals(status) || "L".equals(status)) && !"done".equals(status)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public String data(Integer clientRequest) {
+        System.out.println("CLIENT DATA: " + clientRequest);
+        String condition =
+                "def count = new groovy.json.JsonSlurper().parseText('" + clientRequest + "');\n" +
+                        " HashMap<String, Object> response = new HashMap<>();\n" +
+                        "        String[] meltFiles = new String[]{\"mp4\", \"mlt2_1\", \"mlt2_2\", \"mlt2_3\", \"mlt2_4\"};\n" +
+                        "        HashMap<Integer, String> hashMap = new HashMap<>();\n" +
+                        "\n" +
+                        "        if (count >= 1 && count < meltFiles.length) {\n" +
+                        "            hashMap.put(count, meltFiles[count]);\n" +
+                        "        } else if (count == 0) {\n" +
+                        "            hashMap.put(count, meltFiles[count]);\n" +
+                        "        } else if (count > 4 && count <= 8) {\n" +
+                        "            String largestMlt = meltFiles[meltFiles.length - 1];\n" +
+                        "            String abnormalMlt = largestMlt + \" + mlt2_\" + (count - 4);\n" +
+                        "            hashMap.put(count, abnormalMlt);\n" +
+                        "        } else if (count > 8 && count <= 12) {\n" +
+                        "            String largestMlt = meltFiles[meltFiles.length - 1];\n" +
+                        "            String abnormalMlt = largestMlt + \" + \" + largestMlt + \" + mlt2_\" + (count - 8);\n" +
+                        "            hashMap.put(count, abnormalMlt);\n" +
+                        "        } else if (count > 12) {\n" +
+                        "            String largestMlt = meltFiles[meltFiles.length - 1];\n" +
+                        "            String abnormalMlt = largestMlt + \" + \" + largestMlt + \" + \" + largestMlt + \" + mlt2_\" + (count - 12);\n" +
+                        "            hashMap.put(count, abnormalMlt);\n" +
+                        "            System.out.println(\"After 12th mlt: \" + hashMap);\n" +
+                        "        }\n" +
+                        "\n" +
+                        "        response.put(\"AbnormalCount\", count);\n" +
+                        "        response.put(\"Value\", hashMap.getOrDefault(count, \"UNKNOWN\"));\n" +
+                        "        System.out.println(response);\n" +
+                        "        return response;";
+        return condition;
+    }
+
+    @Test
+    public void test1() {
+        Integer json = getString();
+        LplTest lplTest = new LplTest();
+        String choosingMlt = lplTest.data(json);
+        Object getData = Eval.me(choosingMlt);
+        System.out.println("Mlt used: " + getData);
     }
 
 }
