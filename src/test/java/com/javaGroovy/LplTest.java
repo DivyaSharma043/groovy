@@ -3,6 +3,8 @@ package com.javaGroovy;
 import com.javaGroovy.domain.ClientInputData;
 import com.javaGroovy.domain.ClientRequest;
 import com.javaGroovy.domain.ClientRequestData;
+import groovy.json.JsonOutput;
+import groovy.lang.GroovyShell;
 import groovy.util.Eval;
 import org.junit.jupiter.api.Test;
 
@@ -44,17 +46,42 @@ public class LplTest {
 
         clientRequestData.setClientInputData(clientInputDataList);
         clientRequest.setClientRequestData(clientRequestData);
+        String jsonInput = JsonOutput.toJson(clientRequest);
 
-        int count = 0;
+        return executeGroovyScript(jsonInput);
+    }
 
-        for (ClientInputData inputData : clientInputDataList) {
-            HashMap<String, String> mapData = inputData.getMetaDataMap();
-            String status = mapData.get("status");
-            if (("H".equals(status) || "L".equals(status)) && !"done".equals(status)) {
-                count++;
+    private static Integer executeGroovyScript(String jsonInput) {
+        GroovyShell shell = new GroovyShell();
+        String script = """
+            import groovy.json.JsonSlurper
+            
+            def getAbnormalCount(String jsonInput) {
+                def slurper = new JsonSlurper()
+                def data = slurper.parseText(jsonInput)
+                
+                List<Map> clientInputDataList = data.clientRequestData.clientInputData
+                int count = 0
+
+                clientInputDataList.each { inputData ->
+                    def mapData = inputData.metaDataMap
+                    String status = mapData.get("status")
+                    if (("H".equals(status) || "L".equals(status)) && !"done".equals(status)) {
+                        count++
+                    }
+                }
+                if (count == 0) {
+                    return 14
+                }
+                return count
             }
-        }
-        return count;
+            
+            return getAbnormalCount(input)
+        """;
+
+        shell.setVariable("input", jsonInput);
+        Object result = shell.evaluate(script);
+        return (Integer) result;
     }
 
     public String data(Integer clientRequest) {
@@ -98,6 +125,12 @@ public class LplTest {
         String choosingMlt = lplTest.data(json);
         Object getData = Eval.me(choosingMlt);
         System.out.println("Mlt used: " + getData);
+    }
+
+    @Test
+    public void test2(){
+        Integer json = getString();
+        System.out.println(json);
     }
 
 }
